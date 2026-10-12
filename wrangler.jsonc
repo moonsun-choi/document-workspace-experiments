@@ -1,10 +1,14 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  // 정적 사이트(out/)만 올리는 Worker. 서버 코드는 없다.
+  // 정적 사이트(out/)를 올린다. worker/index.js는 "$"가 든 경로만 바로잡는다.
   "name": "document-workspace-experiments",
+  "main": "worker/index.js",
   "compatibility_date": "2026-09-01",
   "assets": {
     "directory": "./out",
-    "not_found_handling": "404-page"
+    "binding": "ASSETS",
+    "not_found_handling": "404-page",
+    // 동적 경로가 있는 곳만 Worker를 먼저 거친다. 동적 경로를 추가하면 여기에도 넣는다.
+    "run_worker_first": ["/docs/*", "/experiments/*"]
   }
 }

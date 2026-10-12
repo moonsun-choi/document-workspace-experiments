@@ -116,7 +116,8 @@ src/lib/                UI와 분리된 순수 로직 (테스트 대상)
   experiment-log.ts     질문 결과 → 실험 기록 Markdown
 src/components/         클라이언트 UI
 src/app/                라우트 (actions.ts: 저장 서버 액션, actions.static.ts: 배포판 대체)
-wrangler.jsonc          Cloudflare 설정 (out/ 정적 파일만 올림)
+wrangler.jsonc          Cloudflare 설정 (out/ 정적 파일을 올림)
+worker/index.js         정적 파일 앞단 Worker: Next 파일 이름의 "$" 경로를 리다이렉트 없이 응답
 ```
 
 ## 다음 단계
