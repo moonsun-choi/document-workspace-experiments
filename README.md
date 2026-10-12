@@ -72,7 +72,7 @@ npm run preview:static   # Cloudflare 런타임으로 로컬 미리보기 (http:
 2. 빌드 설정
    - Build command: `npm run build:static`
    - Deploy command: `npx wrangler deploy`
-   - 환경 변수(Build variables): `NODE_VERSION` = `22`
+   - Node 버전은 저장소의 `.node-version`(22)을 자동으로 읽으므로 따로 넣지 않아도 됩니다.
 3. 배포할 브랜치를 고르고 저장하면 `document-workspace-experiments.<계정>.workers.dev` 주소로 배포됩니다.
 
 **방법 2. 내 컴퓨터에서 직접**
