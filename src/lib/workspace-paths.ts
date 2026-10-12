@@ -21,10 +21,12 @@ export function resolveWorkspacePaths(options: {
   /** WORKSPACE_DIR 환경 변수 값 */
   workspaceDir?: string;
   exists: (dir: string) => boolean;
+  /** 배포용 정적 빌드. 로컬 문서가 실수로 공개되지 않게 항상 샘플만 쓴다 */
+  staticExport?: boolean;
 }): WorkspacePaths {
-  const { cwd, workspaceDir, exists } = options;
+  const { cwd, workspaceDir, exists, staticExport = false } = options;
   const localRoot = workspaceDir ? path.resolve(cwd, workspaceDir) : path.join(cwd, "workspace");
-  if (exists(localRoot)) {
+  if (!staticExport && exists(localRoot)) {
     return {
       mode: "local",
       root: localRoot,

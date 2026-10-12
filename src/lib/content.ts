@@ -14,6 +14,7 @@ export function getWorkspacePaths(): WorkspacePaths {
       ? path.resolve(/* turbopackIgnore: true */ process.env.WORKSPACE_DIR)
       : undefined,
     exists: (dir) => fs.existsSync(dir),
+    staticExport: process.env.STATIC_EXPORT === "1",
   });
 }
 

@@ -48,7 +48,7 @@ npm run build
   ```
 
 - **여러 컴퓨터에서 이어서 작업하려면** `WORKSPACE_DIR`을 iCloud·Google Drive·Dropbox 같은 동기화 폴더로 지정하거나, 작업 폴더를 별도의 **비공개** Git 저장소로 관리하세요. 앱 코드는 이 저장소에서 받습니다.
-- 앱은 로컬에서 실행하는 것을 전제로 합니다. 클라우드(Vercel 등)에 배포하면 로컬 문서에 접근할 수 없어 샘플만 보입니다.
+- 내 문서는 로컬에서 실행할 때만 보입니다. 클라우드 배포판은 샘플 데모입니다(아래 "Cloudflare 배포").
 
 ### 파일 쓰기
 
@@ -56,6 +56,31 @@ npm run build
 - 로컬에서 `npm run build && npm start`로 쓸 때는 `ENABLE_FILE_WRITE=1`을 설정하세요. 외부에 공개된 서버에서는 켜지 마세요.
 - 파일 이름은 `날짜-제목.md`로 자동으로 만들어지고, 같은 이름이 있으면 `-2`를 붙입니다. 기존 파일은 덮어쓰지 않습니다.
 - 샘플 모드(`workspace/` 없음)에서는 저장하지 않습니다.
+
+## Cloudflare 배포 (샘플 데모)
+
+배포판은 서버 없는 **정적 사이트**입니다. `STATIC_EXPORT=1`로 빌드하면 로컬 `workspace/`가 있어도 **항상 `samples/`만** 들어가므로, 내 문서가 공개될 일은 없습니다. 검색·비교·그래프·질문은 그대로 동작하고, 저장 기능만 꺼집니다.
+
+```bash
+npm run build:static     # out/ 생성
+npm run preview:static   # Cloudflare 런타임으로 로컬 미리보기 (http://localhost:8787)
+```
+
+**방법 1. Cloudflare 대시보드에서 GitHub 연결 (권장, push하면 자동 배포)**
+
+1. Cloudflare 대시보드 → Workers & Pages → Create → **Import a repository** → 이 저장소 선택
+2. 빌드 설정
+   - Build command: `npm run build:static`
+   - Deploy command: `npx wrangler deploy`
+   - 환경 변수(Build variables): `NODE_VERSION` = `22`
+3. 배포할 브랜치를 고르고 저장하면 `document-workspace-experiments.<계정>.workers.dev` 주소로 배포됩니다.
+
+**방법 2. 내 컴퓨터에서 직접**
+
+```bash
+npx wrangler login
+npm run deploy
+```
 
 ## 문서 작성 규칙
 
@@ -90,7 +115,8 @@ src/lib/                UI와 분리된 순수 로직 (테스트 대상)
   graph.ts              그래프 간선 + d3-force 배치(서버에서 계산)
   experiment-log.ts     질문 결과 → 실험 기록 Markdown
 src/components/         클라이언트 UI
-src/app/                라우트 (actions.ts: 저장 서버 액션)
+src/app/                라우트 (actions.ts: 저장 서버 액션, actions.static.ts: 배포판 대체)
+wrangler.jsonc          Cloudflare 설정 (out/ 정적 파일만 올림)
 ```
 
 ## 다음 단계

@@ -1,0 +1,10 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // 정적 사이트(out/)만 올리는 Worker. 서버 코드는 없다.
+  "name": "document-workspace-experiments",
+  "compatibility_date": "2026-09-01",
+  "assets": {
+    "directory": "./out",
+    "not_found_handling": "404-page"
+  }
+}

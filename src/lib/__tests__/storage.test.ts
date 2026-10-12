@@ -16,6 +16,11 @@ describe("resolveWorkspacePaths", () => {
     expect(p.experimentsDir).toBe("/notes/experiments");
   });
 
+  it("배포용 정적 빌드는 작업 폴더가 있어도 샘플만 쓴다", () => {
+    const p = resolveWorkspacePaths({ cwd: "/app", exists: () => true, staticExport: true });
+    expect(p).toMatchObject({ mode: "sample", writable: false });
+  });
+
   it("작업 폴더가 없으면 샘플을 읽기 전용으로", () => {
     const p = resolveWorkspacePaths({ cwd: "/app", exists: () => false });
     expect(p).toMatchObject({ mode: "sample", docsDir: "/app/samples/docs", writable: false });
