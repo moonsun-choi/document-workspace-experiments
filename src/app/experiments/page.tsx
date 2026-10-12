@@ -13,7 +13,7 @@ export default function ExperimentsPage() {
       <div>
         <h1 className="text-xl font-bold">실험 기록</h1>
         <p className="mt-1 text-sm text-zinc-500">
-          <code>experiments/</code> 폴더의 Markdown 파일입니다. 질문 화면에서 만든 기록을 여기에 저장하세요.
+          작업 폴더의 <code>experiments/</code>에 있는 Markdown 파일입니다. 질문 화면에서 바로 저장할 수 있습니다.
         </p>
       </div>
       {experiments.length === 0 ? (

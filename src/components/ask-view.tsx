@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useTransition } from "react";
+import { saveExperiment } from "@/app/actions";
 import { toExperimentMarkdown } from "@/lib/experiment-log";
 import { retrieve, type RetrievedChunk } from "@/lib/retrieval";
 import type { Doc } from "@/lib/types";
@@ -11,7 +12,7 @@ import { useSelection } from "./use-selection";
 
 const EXAMPLES = ["1단계 검색 방식은 무엇으로 결정했나?", "임베딩 저장소 후보", "청킹할 때 조각 크기 문제"];
 
-export function AskView({ docs }: { docs: Doc[] }) {
+export function AskView({ docs, canSave }: { docs: Doc[]; canSave: boolean }) {
   const { selected } = useSelection();
   const chosen = useMemo(
     () => selected.map((s) => docs.find((d) => d.slug === s)).filter((d): d is Doc => d !== undefined),
@@ -23,6 +24,8 @@ export function AskView({ docs }: { docs: Doc[] }) {
   const [asked, setAsked] = useState<{ question: string; scope: string[]; results: RetrievedChunk[] } | null>(null);
   const [log, setLog] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [saving, startSaving] = useTransition();
+  const [saved, setSaved] = useState<{ id: string; file: string; location?: string } | { error: string } | null>(null);
 
   const ask = (q: string) => {
     const trimmed = q.trim();
@@ -31,6 +34,15 @@ export function AskView({ docs }: { docs: Doc[] }) {
     setAsked({ question: trimmed, scope: scope.map((d) => d.slug), results: retrieve(trimmed, scope, 5) });
     setLog(null);
     setCopied(false);
+    setSaved(null);
+  };
+
+  const save = () => {
+    if (!log) return;
+    startSaving(async () => {
+      const result = await saveExperiment(log);
+      setSaved(result.ok ? { id: result.id, file: result.file, location: result.location } : { error: result.error });
+    });
   };
 
   const makeLog = async () => {
@@ -42,6 +54,7 @@ export function AskView({ docs }: { docs: Doc[] }) {
       date: new Date().toISOString().slice(0, 10),
     });
     setLog(md);
+    setSaved(null);
     try {
       await navigator.clipboard.writeText(md);
       setCopied(true);
@@ -126,19 +139,46 @@ export function AskView({ docs }: { docs: Doc[] }) {
           </div>
         )}
 
-        {log && (
+        {log !== null && (
           <div className="space-y-2">
             <p className="text-xs text-zinc-500">
-              {copied ? "클립보드에 복사했습니다. " : ""}
-              <code>experiments/</code> 폴더에 새 <code>.md</code> 파일로 저장하면 실험 기록에 나타납니다.
+              {copied ? "클립보드에도 복사했습니다. " : ""}
+              아래 내용을 고친 뒤(메모 등) 저장하면 실험 기록에 추가됩니다.
             </p>
             <textarea
-              readOnly
               value={log}
-              rows={14}
+              onChange={(e) => {
+                setLog(e.target.value);
+                setSaved(null);
+              }}
+              rows={16}
               aria-label="실험 기록 Markdown"
-              className="w-full rounded-lg border border-zinc-300 bg-zinc-50 p-3 font-mono text-xs dark:border-zinc-700 dark:bg-zinc-900"
+              className="w-full rounded-lg border border-zinc-300 bg-white p-3 font-mono text-xs outline-none focus:border-indigo-500 dark:border-zinc-700 dark:bg-zinc-900"
             />
+            <div className="flex flex-wrap items-center gap-3">
+              <button
+                type="button"
+                onClick={save}
+                disabled={!canSave || saving || (saved !== null && "id" in saved)}
+                className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {saving ? "저장 중…" : "실험 기록으로 저장"}
+              </button>
+              {!canSave && (
+                <span className="text-xs text-zinc-500">
+                  샘플 모드에서는 저장하지 않습니다. <code>npm run workspace:init</code> 후 사용하세요.
+                </span>
+              )}
+              {saved && "id" in saved && (
+                <span className="text-xs text-emerald-700 dark:text-emerald-400">
+                  {saved.location}/{saved.file}에 저장했습니다.{" "}
+                  <Link href={`/experiments/${saved.id}`} className="underline underline-offset-2">
+                    기록 보기 →
+                  </Link>
+                </span>
+              )}
+              {saved && "error" in saved && <span className="text-xs text-rose-600">{saved.error}</span>}
+            </div>
           </div>
         )}
       </section>

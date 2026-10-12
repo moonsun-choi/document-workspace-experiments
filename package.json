@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "workspace:init": "node scripts/init-workspace.mjs"
   },
   "dependencies": {
     "d3-force": "^3.0.0",

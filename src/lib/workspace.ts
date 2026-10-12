@@ -10,7 +10,7 @@ import {
 import type { Doc, FolderNode, Workspace } from "./types";
 
 export interface SourceFile {
-  /** content/ 기준 상대 경로. 예: "research/embeddings.md" */
+  /** 문서 폴더(docs/) 기준 상대 경로. 예: "research/embeddings.md" */
   path: string;
   raw: string;
 }

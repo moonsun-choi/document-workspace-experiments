@@ -1,6 +1,6 @@
 /** 클라이언트로 넘겨도 되는(직렬화 가능한) 문서 정보. */
 export interface Doc {
-  /** 확장자를 뺀 content/ 기준 경로. 예: "research/embeddings" */
+  /** 확장자를 뺀 문서 폴더(docs/) 기준 경로. 예: "research/embeddings" */
   slug: string;
   /** 파일 이름. 위키 링크 `[[name]]`으로 이 이름을 쓴다. */
   name: string;
